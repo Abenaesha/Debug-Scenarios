@@ -1,0 +1,9 @@
+{
+  "name": "dev-bug-test-scenario",
+  "version": "0.0.0",
+  "description": "DevBugTestScenario",
+  "main": "App.js",
+  "author": {
+    "name": ""
+  }
+}
