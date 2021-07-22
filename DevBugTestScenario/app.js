@@ -1,8 +1,8 @@
-'use strict';
+"use strict"
 
-var count = 0;
-var subCount = 0;
-const fs = require('fs');
+var count = 0
+var subCount = 0
+const fs = require("fs")
 
 /* In this example we can see the processing of some .json files and writing them as a .csv file
  * there are at least four problems here:
@@ -11,80 +11,90 @@ const fs = require('fs');
  * 3) the timing of this needs to be changed to look for files every 15 seconds
  * 4) the output to CSV is messy, can it be tidied up so that each inventory item appears on it's own line?
  * 5) feel free to optimise the code in any other way
-*/
+ */
 
-function mainCode() {
-
-    console.log('Main code execution');
-    count += 1;
-    console.log('main count: ' + count);
-    writeInventoryToArray1('C:/DevTest', 'C:/DevTest/Output', 'C:/DevTest/Processed');
-    setTimeout(testSubFunction, 2000);
-
+const mainCode = () => {
+	console.log("Main code execution")
+	count += 1
+	console.log("main count: " + count)
+	writeInventoryToArray1(
+		"./data/jsonData",
+		"./data/csvData",
+		"./data/Processed"
+	)
+	setTimeout(testSubFunction, 2000)
 }
 
+const writeInventoryToArray1 = (
+	folderSource,
+	folderOutput,
+	folderProcessed
+) => {
+	fs.readdir(folderSource, (err, files) => {
+		files.forEach((file) => {
+			let fileType = file.indexOf(".json")
+			if (fileType !== -1) {
+				fs.readFile(folderSource + "/" + file, (err, data) => {
+					if (err) {
+						console.log(err)
+					} else {
+						let JSONFile = JSON.parse( data );
+						let csvData = JSON.stringify( convertJSONToCSV( JSONFile ) );
+						let csvWithLineBreak = csvData.split( ", " ).join( "\n" );
 
-function writeInventoryToArray1(folderSource,folderOutput,folderProcessed) {
+						if (!fs.existsSync(folderOutput)) {
+							fs.mkdirSync( folderOutput, ( err ) => {
+								console.log( err );
+							} );
+						} else {
+							fs.appendFileSync(`${folderOutput}/Output.csv`, csvWithLineBreak)
+						};
 
-    fs.readdir(folderSource, (err, files) => {
-
-        files.forEach(file => {
-
-            let fileType = file.indexOf(".json");
-            if (fileType != -1) {
-
-                fs.readFile(folderSource + "/" + file, (err, data) => {
-                    if (err) {
-
-                        console.log(err);
-
-                    }
-                    else {
-
-                        let JSONFile = JSON.parse(data);
-                        console.log(files);
-                        console.log(file);
-                        console.log(JSON.stringify(data));
-                        console.log(err);
-                        console.log(JSONFile);
-                        //fs.mkdirSync(folderProcessed, (err) => {
-                        //    console.log(err);
-                        //});
-                        //fs.mkdirSync(folderOutput, (err) => {
-                        //    console.log(err);
-                        //});
-                        fs.appendFileSync(folderOutput + "/Output.csv", JSON.stringify(JSONFile));
-                        fs.rename(folderSource + "/" + file, folderProcessed + "/" + file, (err) => { });
-
-                    }
-                })
-            }
-        })
-    })
+						if (!fs.existsSync(folderProcessed)) {
+							fs.mkdir(folderProcessed, (err) => {
+								console.log(err)
+							})
+						} else {
+							fs.rename(
+								`${folderSource}/${file}`,
+								`${folderProcessed}/${file}`,
+								(err) => {
+									if (err) console.log(err)
+								}
+							)
+						}
+					}
+				})
+			}
+		})
+	})
 }
 
-function testSubFunction() {
-
-    subCount += 1;
-    console.log('sub function execution');
-    console.log('sub count: ' + subCount);
-    performNext();
-
+const convertJSONToCSV = (obj) => {
+	let arrOfObj = []
+	arrOfObj.push(obj)
+	let toCSV = arrOfObj.map((row) => {
+		return Object.values(row)
+	})
+	toCSV.unshift(Object.keys(arrOfObj[0]))
+	return toCSV.join(", ")
 }
 
-function performNext() {
-
-    if (count >= 10) {
-        console.log('Exit loop');
-    }
-    else {
-        setTimeout(mainCode, 2000);
-    }
-
+const testSubFunction = () => {
+	subCount += 1
+	console.log("sub function execution")
+	console.log("sub count: " + subCount)
+	performNext()
 }
 
+const performNext = () => {
+	if (count >= 10) {
+		console.log("Exit loop")
+	} else {
+		setTimeout(mainCode, 15000)
+	}
+}
 
-
-console.log('code execution before main code loop');
-mainCode();
-console.log('code execution outside of function calls');
+console.log("code execution before main code loop")
+mainCode()
+console.log("code execution outside of function calls")
