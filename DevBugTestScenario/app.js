@@ -3,6 +3,7 @@
 var count = 0
 var subCount = 0
 const fs = require("fs")
+const {json2csv} = require("json-2-csv")
 
 /* In this example we can see the processing of some .json files and writing them as a .csv file
  * there are at least four problems here:
@@ -38,17 +39,33 @@ const writeInventoryToArray1 = (
 					if (err) {
 						console.log(err)
 					} else {
-						let JSONFile = JSON.parse( data );
-						let csvData = JSON.stringify( convertJSONToCSV( JSONFile ) );
-						let csvWithLineBreak = csvData.split( ", " ).join( "\n" );
+						let JSONFile = JSON.parse(data)
+
+						// ------ with library -------
+						// json2csv( JSONFile, ( err, csv ) => {
+						// 	if (err) console.log(err);
+
+						// 	if (!fs.existsSync(folderOutput)) {
+						// 		fs.mkdirSync( folderOutput, ( err ) => {
+						// 			console.log( err );
+						// 		} );
+						// 	} else {
+						// 		fs.appendFileSync(`${folderOutput}/Output.csv`, csv)
+						// 	};
+						// })
+						// ------------------------------
+
+						let csvData = convertJSONToCSV(JSONFile)
+						let csvWithLineBreak = csvData.split(", ").join("\n")
+						console.log(csvWithLineBreak)
 
 						if (!fs.existsSync(folderOutput)) {
-							fs.mkdirSync( folderOutput, ( err ) => {
-								console.log( err );
-							} );
+							fs.mkdirSync(folderOutput, (err) => {
+								console.log(err)
+							})
 						} else {
 							fs.appendFileSync(`${folderOutput}/Output.csv`, csvWithLineBreak)
-						};
+						}
 
 						if (!fs.existsSync(folderProcessed)) {
 							fs.mkdir(folderProcessed, (err) => {

@@ -5,5 +5,9 @@
   "main": "App.js",
   "author": {
     "name": ""
+  },
+  "dependencies": {
+    "csvjson": "^5.1.0",
+    "json-2-csv": "^3.14.1"
   }
 }
