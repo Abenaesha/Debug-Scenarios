@@ -35,51 +35,55 @@ const writeInventoryToArray1 = (
 		files.forEach((file) => {
 			let fileType = file.indexOf(".json")
 			if (fileType !== -1) {
-				fs.readFile(folderSource + "/" + file, (err, data) => {
+				fs.readFile(`${folderSource}/${file}`, (err, data) => {
 					if (err) {
 						console.log(err)
-					} else {
-						let JSONFile = JSON.parse(data)
+					}
+					let JSONFile = JSON.parse(data)
 
-						// ------ with library -------
-						// json2csv( JSONFile, ( err, csv ) => {
-						// 	if (err) console.log(err);
-
-						// 	if (!fs.existsSync(folderOutput)) {
-						// 		fs.mkdirSync( folderOutput, ( err ) => {
-						// 			console.log( err );
-						// 		} );
-						// 	} else {
-						// 		fs.appendFileSync(`${folderOutput}/Output.csv`, csv)
-						// 	};
-						// })
-						// ------------------------------
-
-						let csvData = convertJSONToCSV(JSONFile)
-						let csvWithLineBreak = csvData.split(", ").join("\n")
-						console.log(csvWithLineBreak)
+					/*
+					------ with library -------
+					json2csv( JSONFile, ( err, csv ) => {
+						if (err) console.log(err);
 
 						if (!fs.existsSync(folderOutput)) {
-							fs.mkdirSync(folderOutput, (err) => {
-								console.log(err)
-							})
+							fs.mkdirSync( folderOutput, ( err ) => {
+								console.log( err );
+							} );
 						} else {
-							fs.appendFileSync(`${folderOutput}/Output.csv`, csvWithLineBreak)
-						}
+							fs.appendFileSync(`${folderOutput}/Output.csv`, `${csv}\r\n`)
+						};
+					})
+					----------------------------
+					*/
 
-						if (!fs.existsSync(folderProcessed)) {
-							fs.mkdir(folderProcessed, (err) => {
-								console.log(err)
-							})
-						} else {
-							fs.rename(
-								`${folderSource}/${file}`,
-								`${folderProcessed}/${file}`,
-								(err) => {
-									if (err) console.log(err)
-								}
-							)
-						}
+					let csvData = convertJSONToCSV(JSONFile)
+					let csvWithNewLine = csvData.join("\n")
+					// console.log(csvWithNewLine)
+
+					if (!fs.existsSync(folderOutput)) {
+						fs.mkdirSync(folderOutput, (err) => {
+							console.log(err)
+						})
+					} else {
+						fs.appendFileSync(
+							`${folderOutput}/Output.csv`,
+							`${csvWithNewLine}\r\n`
+						)
+					}
+
+					if (!fs.existsSync(folderProcessed)) {
+						fs.mkdir(folderProcessed, (err) => {
+							console.log(err)
+						})
+					} else {
+						fs.rename(
+							`${folderSource}/${file}`,
+							`${folderProcessed}/${file}`,
+							(err) => {
+								if (err) console.log(err)
+							}
+						)
 					}
 				})
 			}
@@ -94,7 +98,7 @@ const convertJSONToCSV = (obj) => {
 		return Object.values(row)
 	})
 	toCSV.unshift(Object.keys(arrOfObj[0]))
-	return toCSV.join(", ")
+	return toCSV
 }
 
 const testSubFunction = () => {
@@ -105,11 +109,7 @@ const testSubFunction = () => {
 }
 
 const performNext = () => {
-	if (count >= 10) {
-		console.log("Exit loop")
-	} else {
-		setTimeout(mainCode, 15000)
-	}
+	count >= 10 ? console.log("Exit loop") : setTimeout(mainCode, 15000)
 }
 
 console.log("code execution before main code loop")
